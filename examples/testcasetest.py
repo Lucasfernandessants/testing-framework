@@ -1,7 +1,10 @@
-from testing_framework.testresult import TestResult
-from testing_framework.testcase import TestCase
 from testing_framework.teststub import TestStub
 from testing_framework.testspy import TestSpy
+from testing_framework.testcase import TestCase
+from testing_framework.testresult import TestResult
+from testing_framework.testloader import TestLoader
+from testing_framework.testrunner import TestRunner
+from testing_framework.testsuite import TestSuite
 class TestCaseTest(TestCase):
 
     def set_up(self):
@@ -51,6 +54,30 @@ class TestCaseTest(TestCase):
         spy.run(self.result)
         assert spy.log == "set_up test_method tear_down"
 
+    def test_assert_true(self):
+        self.assert_true(True)
+
+    def test_assert_false(self):
+        self.assert_false(False)
+
+    def test_assert_equal(self):
+        self.assert_equal("", "")
+        self.assert_equal("foo", "foo")
+        self.assert_equal([], [])
+        self.assert_equal(['foo'], ['foo'])
+        self.assert_equal((), ())
+        self.assert_equal(('foo',), ('foo',))
+        self.assert_equal({}, {})
+        self.assert_equal({'foo'}, {'foo'})
+
+    def test_assert_in(self):
+        animals = {'monkey': 'banana', 'cow': 'grass', 'seal': 'fish'}
+
+        self.assert_in('a', 'abc')
+        self.assert_in('foo', ['foo'])
+        self.assert_in(1, [1, 2, 3])
+        self.assert_in('monkey', animals)
+
 result = TestResult()
 
 test = TestCaseTest('test_result_success_run')
@@ -78,3 +105,10 @@ test = TestCaseTest('test_template_method')
 test.run(result)
 
 print(result.summary())
+
+loader = TestLoader()
+test_case_suite = loader.make_suite(TestCaseTest)
+suite = TestSuite()
+suite.add_test(test_case_suite)
+runner = TestRunner()
+runner.run(suite)
